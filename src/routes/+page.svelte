@@ -1,6 +1,5 @@
 <script lang="ts">
 	import AnalysisComponent from '$lib/components/AnalysisComponent.svelte';
-	import { getLinesFromCSVFile } from '$lib/helpers';
     import { Dropzone } from 'flowbite-svelte';
 
     let file: File | undefined = undefined;
@@ -12,17 +11,8 @@
           [...event.dataTransfer.items].forEach((item, i) => {
             if (item.kind === 'file') {
               file = item.getAsFile();
-              performAnalysis(file!);
             }
           });
-        }
-    }
-
-    async function performAnalysis(file: File) {
-        const lines: string[] = await getLinesFromCSVFile(file);
-        
-        for (const s of lines) {
-            console.log('line: ', s);
         }
     }
 </script>

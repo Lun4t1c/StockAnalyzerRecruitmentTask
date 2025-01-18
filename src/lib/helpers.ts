@@ -1,3 +1,5 @@
 export async function getLinesFromCSVFile(file: File): Promise<string[]> {
-    return (await file.text()).split('\n');
+    return (await file.text())
+        .split('\n')
+        .filter(str => str !== '');
 }
