@@ -1,0 +1,63 @@
+node_modules
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Node.js dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories
+/.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+
+# Vite
+*.env
+*.env.local
+*.env.*.local
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Optional lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Svelte-specific
+.svelte-kit/
+.svelte/
