@@ -69,3 +69,24 @@ export async function findDeclinePeriods(
 
 	return result;
 }
+
+export async function findBiggestDeclinePeriod(
+	declinePeriods: StockRowDataModel[][]
+): Promise<StockRowDataModel[] | null> {
+	if (declinePeriods.length === 0) return null;
+	if (declinePeriods.length === 1) return declinePeriods[0];
+
+	let result: StockRowDataModel[] = declinePeriods[0];
+
+	for (let i = 1; i < declinePeriods.length; i++) {
+		const tempDeclinePeriod = declinePeriods[i];
+
+		const currentLargestDecline = result[0].value - result[result.length - 1].value;
+		const tempLargestDecline =
+			tempDeclinePeriod[0].value - tempDeclinePeriod[tempDeclinePeriod.length - 1].value;
+
+		if (tempLargestDecline > currentLargestDecline) result = tempDeclinePeriod;
+	}
+
+	return result;
+}

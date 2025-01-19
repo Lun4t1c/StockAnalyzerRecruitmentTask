@@ -1,10 +1,11 @@
 <script lang="ts">
 	import {
+		findBiggestDeclinePeriod,
 		findDeclinePeriods,
 		findLargestDailyDecline,
 		getRowsDataFromCSVFile
 	} from '$lib/utils/analysis';
-	import { formatNumberToMoneyString } from '$lib/utils/helpers';
+	import { formatDate, formatNumberToMoneyString } from '$lib/utils/helpers';
 	import type { StockRowDataModel } from '$lib/utils/types';
 	import { onMount } from 'svelte';
 
@@ -12,6 +13,7 @@
 
 	let largestDailyDeclineString: string | null = null;
 	let declinePeriodsString: string | null = null;
+	let largestDeclinePeriodString: string | null = null;
 
 	onMount(() => {
 		performAnalysis(file);
@@ -24,10 +26,34 @@
 			(async () => {
 				largestDailyDeclineString = formatNumberToMoneyString(await findLargestDailyDecline(rows));
 			})(),
+
 			(async () => {
-				declinePeriodsString = (await findDeclinePeriods(rows)).length.toString();
+				const declinePeriods: StockRowDataModel[][] = await findDeclinePeriods(rows);
+				declinePeriodsString = declinePeriods.length.toString();
+
+				largestDeclinePeriodString = getLargestDeclinePeriodString(
+					await findBiggestDeclinePeriod(declinePeriods)
+				);
 			})()
 		]);
+	}
+
+	function getLargestDeclinePeriodString(declinePeriod: StockRowDataModel[] | null): string {
+		if (declinePeriod === null) return 'NaN';
+		else {
+			const formattedDateFrom: string = formatDate(declinePeriod[0].date);
+			const formattedDateTo: string = formatDate(declinePeriod[declinePeriod.length - 1].date);
+			return (
+				formattedDateFrom +
+				' - ' +
+				formattedDateTo +
+				` (${declinePeriod.length - 1} dni)` +
+				': spadek ' +
+				formatNumberToMoneyString(
+					declinePeriod[0].value - declinePeriod[declinePeriod.length - 1].value
+				)
+			);
+		}
 	}
 </script>
 
@@ -36,4 +62,5 @@
 
 	<div>Największy dzienny spadek: {largestDailyDeclineString}</div>
 	<div>Ilość okresów spadku: {declinePeriodsString}</div>
+	<div>Okres największego spadku: {largestDeclinePeriodString}</div>
 </div>
