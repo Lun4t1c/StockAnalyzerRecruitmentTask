@@ -44,15 +44,17 @@ export async function findDeclinePeriods(
 	let isInDecline: boolean = false;
 	let currentDeclinePeriod: StockRowDataModel[] = [];
 
-	for (let i = 1; i < rows.length; i++) {
-		const difference = rows[i].value - rows[i - 1].value;
+	const sortedRows = rows.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+	for (let i = 1; i < sortedRows.length; i++) {
+		const difference = sortedRows[i].value - sortedRows[i - 1].value;
 
 		if (difference < 0) {
 			if (!isInDecline) {
 				isInDecline = true;
-				currentDeclinePeriod = [rows[i - 1]];
+				currentDeclinePeriod = [sortedRows[i - 1]];
 			}
-			currentDeclinePeriod.push(rows[i]);
+			currentDeclinePeriod.push(sortedRows[i]);
 		} else {
 			if (isInDecline) {
 				result.push(currentDeclinePeriod);
