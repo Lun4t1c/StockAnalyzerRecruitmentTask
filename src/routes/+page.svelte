@@ -8,7 +8,7 @@
 		event.preventDefault();
 
 		if (event.dataTransfer.items) {
-			[...event.dataTransfer.items].forEach((item, i) => {
+			[...event.dataTransfer.items].forEach((item) => {
 				if (item.kind === 'file') {
 					file = item.getAsFile();
 				}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {
+		findAllPeriods,
 		findBiggestDeclinePeriod,
 		findDeclinePeriods,
 		findLargestDailyDecline,
@@ -21,6 +22,8 @@
 
 	async function performAnalysis(file: File) {
 		const rows: StockRowDataModel[] = await getRowsDataFromCSVFile(file);
+
+		console.log(await findAllPeriods(rows));
 
 		await Promise.all([
 			(async () => {

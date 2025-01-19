@@ -4,3 +4,9 @@ export interface StockRowDataModel {
 	value: number;
 	currency: string;
 }
+
+export interface Periods {
+	increase: StockRowDataModel[][];
+	constant: StockRowDataModel[][];
+	decline: StockRowDataModel[][];
+}

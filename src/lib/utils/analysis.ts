@@ -1,4 +1,4 @@
-import type { StockRowDataModel } from './types';
+import type { Periods, StockRowDataModel } from './types';
 
 export async function getRowsDataFromCSVFile(file: File): Promise<StockRowDataModel[]> {
 	const lines: string[] = (await file.text()).split('\n').filter((str) => str !== '');
@@ -70,6 +70,45 @@ export async function findDeclinePeriods(
 	return result;
 }
 
+export async function findAllPeriods(rows: StockRowDataModel[]): Promise<Periods> {
+	if (rows.length < 2) return { increase: [], decline: [], constant: [] };
+
+	const result: Periods = {
+		increase: [],
+		constant: [],
+		decline: []
+	};
+
+    let currentPeriodType: 'decline' | 'increase' | 'constant' = 'constant';
+	let currentPeriod: StockRowDataModel[] = [];
+
+	const sortedRows = rows.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+	for (let i = 1; i < sortedRows.length; i++) {
+		const difference = sortedRows[i].value - sortedRows[i - 1].value;
+
+		if (difference < 0) {
+			if (currentPeriodType !== 'decline') {
+                currentPeriodType = 'decline';
+
+				currentPeriod = [sortedRows[i - 1]];
+			}
+			currentPeriod.push(sortedRows[i]);
+		} else {
+			if (currentPeriodType === 'decline') {
+				result.decline.push(currentPeriod);
+				currentPeriod = [];
+			}
+
+			currentPeriodType = 'constant';
+		}
+	}
+
+	if (currentPeriodType === 'decline' && currentPeriod.length > 0) result.decline.push(currentPeriod);
+
+	return result;
+}
+
 export async function findBiggestDeclinePeriod(
 	declinePeriods: StockRowDataModel[][]
 ): Promise<StockRowDataModel[] | null> {
@@ -90,3 +129,4 @@ export async function findBiggestDeclinePeriod(
 
 	return result;
 }
+
