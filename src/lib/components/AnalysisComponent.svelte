@@ -1,29 +1,39 @@
 <script lang="ts">
-	import { findLargestDailyDecline, getLinesFromCSVFile } from "$lib/utils/analysis";
-	import { formatNumberToMoneyString } from "$lib/utils/helpers";
-	import { onMount } from "svelte";
+	import {
+		countDeclinePeriods,
+		findLargestDailyDecline,
+		getRowsDataFromCSVFile
+	} from '$lib/utils/analysis';
+	import { formatNumberToMoneyString } from '$lib/utils/helpers';
+	import type { StockRowDataModel } from '$lib/utils/types';
+	import { onMount } from 'svelte';
 
-    export let file: File;
+	export let file: File;
 
-    let largestDailyDeclineString: string = 'Brak danych';
+	let largestDailyDeclineString: string | null = null;
+	let declinePeriodsString: string | null = null;
 
-    onMount(() => {
-        performAnalysis(file);
-    })
+	onMount(() => {
+		performAnalysis(file);
+	});
 
-    async function performAnalysis(file: File) {
-        const lines: string[] = await getLinesFromCSVFile(file);
+	async function performAnalysis(file: File) {
+		const rows: StockRowDataModel[] = await getRowsDataFromCSVFile(file);
 
-        await Promise.all([
-            (async () => {
-                largestDailyDeclineString = formatNumberToMoneyString(await findLargestDailyDecline(lines));
-            })(),
-        ])
-    }
+		await Promise.all([
+			(async () => {
+				largestDailyDeclineString = formatNumberToMoneyString(await findLargestDailyDecline(rows));
+			})(),
+			(async () => {
+				declinePeriodsString = (await countDeclinePeriods(rows)).toString();
+			})()
+		]);
+	}
 </script>
 
 <div class="flex flex-col">
-    <div>analysis: {file.name}</div>
+	<div>analysis: {file.name}</div>
 
-    <div>Największy dzienny spadek: {largestDailyDeclineString}</div>
+	<div>Największy dzienny spadek: {largestDailyDeclineString}</div>
+	<div>Ilość okresów spadku: {declinePeriodsString}</div>
 </div>
