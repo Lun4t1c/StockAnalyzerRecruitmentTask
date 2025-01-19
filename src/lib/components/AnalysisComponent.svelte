@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {
-		countDeclinePeriods,
+		findDeclinePeriods,
 		findLargestDailyDecline,
 		getRowsDataFromCSVFile
 	} from '$lib/utils/analysis';
@@ -25,7 +25,7 @@
 				largestDailyDeclineString = formatNumberToMoneyString(await findLargestDailyDecline(rows));
 			})(),
 			(async () => {
-				declinePeriodsString = (await countDeclinePeriods(rows)).toString();
+				declinePeriodsString = (await findDeclinePeriods(rows)).length.toString();
 			})()
 		]);
 	}

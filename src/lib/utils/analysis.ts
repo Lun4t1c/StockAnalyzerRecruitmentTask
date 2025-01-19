@@ -34,24 +34,36 @@ export async function findLargestDailyDecline(rows: StockRowDataModel[]): Promis
 	return -result;
 }
 
-export async function countDeclinePeriods(rows: StockRowDataModel[]): Promise<number> {
-	if (rows.length < 2) return 0;
+export async function findDeclinePeriods(
+	rows: StockRowDataModel[]
+): Promise<StockRowDataModel[][]> {
+	if (rows.length < 2) return [];
 
-	let result: number = 0;
+	const result: StockRowDataModel[][] = [];
+
 	let isInDecline: boolean = false;
+	let currentDeclinePeriod: StockRowDataModel[] = [];
 
 	for (let i = 1; i < rows.length; i++) {
 		const difference = rows[i].value - rows[i - 1].value;
 
 		if (difference < 0) {
-			if (isInDecline == false) {
+			if (!isInDecline) {
 				isInDecline = true;
-				result++;
+				currentDeclinePeriod = [rows[i - 1]];
 			}
+			currentDeclinePeriod.push(rows[i]);
 		} else {
+			if (isInDecline) {
+				result.push(currentDeclinePeriod);
+				currentDeclinePeriod = [];
+			}
+
 			isInDecline = false;
 		}
 	}
+
+	if (isInDecline && currentDeclinePeriod.length > 0) result.push(currentDeclinePeriod);
 
 	return result;
 }
