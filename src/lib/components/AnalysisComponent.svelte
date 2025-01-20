@@ -9,18 +9,14 @@
 		type StockRowDataModel
 	} from '$lib/utils/analysis';
 	import { formatDate, formatNumberToMoneyString } from '$lib/utils/helpers';
-	import { onMount } from 'svelte';
 
 	export let file: File;
+	$: performAnalysis(file);
 
 	let largestDailyDeclineString: string | null = null;
 	let declinePeriodsAmountString: string | null = null;
 	let largestDeclinePeriodString: string | null = null;
 	let longestConstantPeriodString: string | null = null;
-
-	onMount(() => {
-		performAnalysis(file);
-	});
 
 	async function performAnalysis(file: File) {
 		const rows: StockRowDataModel[] = await getRowsDataFromCSVFile(file);
