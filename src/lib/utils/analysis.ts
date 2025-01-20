@@ -79,7 +79,7 @@ export async function findAllPeriods(rows: StockRowDataModel[]): Promise<Periods
 		decline: []
 	};
 
-    let currentPeriodType: 'decline' | 'increase' | 'constant' = 'constant';
+	let currentPeriodType: 'decline' | 'increase' | 'constant' = 'constant';
 	let currentPeriod: StockRowDataModel[] = [];
 
 	const sortedRows = rows.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -88,23 +88,42 @@ export async function findAllPeriods(rows: StockRowDataModel[]): Promise<Periods
 		const difference = sortedRows[i].value - sortedRows[i - 1].value;
 
 		if (difference < 0) {
+			// Handle decline period
 			if (currentPeriodType !== 'decline') {
-                currentPeriodType = 'decline';
-
+				if (currentPeriod.length > 0) {
+					result[currentPeriodType].push(currentPeriod);
+				}
+				currentPeriodType = 'decline';
+				currentPeriod = [sortedRows[i - 1]];
+			}
+			currentPeriod.push(sortedRows[i]);
+		} else if (difference > 0) {
+			// Handle increase period
+			if (currentPeriodType !== 'increase') {
+				if (currentPeriod.length > 0) {
+					result[currentPeriodType].push(currentPeriod);
+				}
+				currentPeriodType = 'increase';
 				currentPeriod = [sortedRows[i - 1]];
 			}
 			currentPeriod.push(sortedRows[i]);
 		} else {
-			if (currentPeriodType === 'decline') {
-				result.decline.push(currentPeriod);
-				currentPeriod = [];
+			// Handle constant period
+			if (currentPeriodType !== 'constant') {
+				if (currentPeriod.length > 0) {
+					result[currentPeriodType].push(currentPeriod);
+				}
+				currentPeriodType = 'constant';
+				currentPeriod = [sortedRows[i - 1]];
 			}
-
-			currentPeriodType = 'constant';
+			currentPeriod.push(sortedRows[i]);
 		}
 	}
 
-	if (currentPeriodType === 'decline' && currentPeriod.length > 0) result.decline.push(currentPeriod);
+	// Push the last period to the result
+	if (currentPeriod.length > 0) {
+		result[currentPeriodType].push(currentPeriod);
+	}
 
 	return result;
 }
@@ -129,4 +148,3 @@ export async function findBiggestDeclinePeriod(
 
 	return result;
 }
-
