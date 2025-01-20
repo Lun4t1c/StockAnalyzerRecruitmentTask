@@ -1,5 +1,10 @@
 import type { Periods, StockRowDataModel } from './types';
 
+/**
+ * Converts content of .csv file to standarized objects
+ * @param file .csv file passed as {@link File}
+ * @returns Rows of data as array of {@link StockRowDataModel}
+ */
 export async function getRowsDataFromCSVFile(file: File): Promise<StockRowDataModel[]> {
 	const lines: string[] = (await file.text()).split('\n').filter((str) => str !== '');
 
@@ -18,6 +23,10 @@ export async function getRowsDataFromCSVFile(file: File): Promise<StockRowDataMo
 	return rowsData;
 }
 
+/**
+ * @param rows All data from table 'ceny_akcji' in database passed as array of {@link StockRowDataModel}
+ * @returns Value of largest daily decline found or {@link null} if there was not enough data or no declines
+ */
 export async function findLargestDailyDecline(rows: StockRowDataModel[]): Promise<number | null> {
 	if (rows.length < 2) return null;
 
@@ -31,9 +40,14 @@ export async function findLargestDailyDecline(rows: StockRowDataModel[]): Promis
 		}
 	}
 
-	return -result;
+	return result < 0 ? Math.abs(result) : null;
 }
 
+/**
+ * Analyzes all data from table 'ceny_akcji' and looks groups it as periods - declines, increases and constants
+ * @param rows All data from 'ceny_akcji' passed as array of {@link StockRowDataModel}
+ * @returns Grouped periods as {@link Periods} object
+ */
 export async function findAllPeriods(rows: StockRowDataModel[]): Promise<Periods> {
 	if (rows.length < 2) return { increase: [], decline: [], constant: [] };
 
@@ -92,6 +106,11 @@ export async function findAllPeriods(rows: StockRowDataModel[]): Promise<Periods
 	return result;
 }
 
+/**
+ * @param declinePeriods Periods in which value was in decline passed as 2d array of {@link StockRowDataModel}
+ * @returns Single period in which value has decreased the most as array of {@link StockRowDataModel}
+ * or {@link null} if there was not enough data
+ */
 export async function findBiggestDeclinePeriod(
 	declinePeriods: StockRowDataModel[][]
 ): Promise<StockRowDataModel[] | null> {
@@ -113,6 +132,12 @@ export async function findBiggestDeclinePeriod(
 	return result;
 }
 
+/**
+ *
+ * @param constantPeriods Periods in which value did not change passed as 2d array of {@link StockRowDataModel}
+ * @returns Longest single period in which value did not change as array of {@link StockRowDataModel}
+ * or {@link null} if it there was not enough data
+ */
 export async function findLongestConstantValuePeriod(
 	constantPeriods: StockRowDataModel[][]
 ): Promise<StockRowDataModel[] | null> {
