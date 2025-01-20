@@ -4,10 +4,11 @@
 		findBiggestDeclinePeriod,
 		findLargestDailyDecline,
 		findLongestConstantValuePeriod,
-		getRowsDataFromCSVFile
+		getRowsDataFromCSVFile,
+		type Periods,
+		type StockRowDataModel
 	} from '$lib/utils/analysis';
 	import { formatDate, formatNumberToMoneyString } from '$lib/utils/helpers';
-	import type { Periods, StockRowDataModel } from '$lib/utils/types';
 	import { onMount } from 'svelte';
 
 	export let file: File;
