@@ -11,6 +11,7 @@
 	import { formatDate, formatNumberToMoneyString } from '$lib/utils/helpers';
 
 	export let file: File;
+
 	$: performAnalysis(file);
 
 	let largestDailyDeclineString: string | null = null;
@@ -78,11 +79,29 @@
 	}
 </script>
 
-<div class="flex flex-col">
-	<div>Analiza: {file.name}</div>
+<div class="flex flex-col gap-4 rounded-lg bg-transparent p-6 text-2xl text-gray-200">
+	<div class="flex flex-col font-semibold">
+		Analiza:
+		<span class="font-normal">{file.name}</span>
+	</div>
 
-	<div>Największy dzienny spadek: {largestDailyDeclineString}</div>
-	<div>Ilość okresów spadku: {declinePeriodsAmountString}</div>
-	<div>Okres największego spadku: {largestDeclinePeriodString}</div>
-	<div>Najdłuższy okres stałej ceny: {longestConstantPeriodString}</div>
+	<div class="flex flex-col">
+		<span class="font-semibold">Największy dzienny spadek:</span>
+		{largestDailyDeclineString}
+	</div>
+
+	<div class="flex flex-col">
+		<span class="font-semibold">Ilość okresów spadku:</span>
+		{declinePeriodsAmountString}
+	</div>
+
+	<div class="flex flex-col">
+		<span class="font-semibold">Okres największego spadku:</span>
+		{largestDeclinePeriodString}
+	</div>
+
+	<div class="flex flex-col">
+		<span class="font-semibold">Najdłuższy okres stałej ceny:</span>
+		{longestConstantPeriodString}
+	</div>
 </div>

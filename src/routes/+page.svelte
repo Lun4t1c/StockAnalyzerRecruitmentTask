@@ -4,7 +4,7 @@
 
 	let file: File | undefined = undefined;
 
-	function handleDrop(event: any) {
+	function handleDrop(event: any): void {
 		event.preventDefault();
 
 		if (event.dataTransfer.items) {
@@ -15,11 +15,19 @@
 			});
 		}
 	}
+
+	function handleChange(event: any): void {
+		const files = event.target.files;
+		if (files.length > 0) {
+			file = files[0];
+		}
+	}
 </script>
 
 <div class="flex h-screen flex-col items-center justify-center gap-3">
 	<Dropzone
 		on:drop={handleDrop}
+		on:change={handleChange}
 		on:dragover={(event: any) => event.preventDefault()}
 		class="h-auto w-auto bg-black p-5 hover:bg-slate-900"
 	>
