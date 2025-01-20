@@ -34,42 +34,6 @@ export async function findLargestDailyDecline(rows: StockRowDataModel[]): Promis
 	return -result;
 }
 
-export async function findDeclinePeriods(
-	rows: StockRowDataModel[]
-): Promise<StockRowDataModel[][]> {
-	if (rows.length < 2) return [];
-
-	const result: StockRowDataModel[][] = [];
-
-	let isInDecline: boolean = false;
-	let currentDeclinePeriod: StockRowDataModel[] = [];
-
-	const sortedRows = rows.sort((a, b) => a.date.getTime() - b.date.getTime());
-
-	for (let i = 1; i < sortedRows.length; i++) {
-		const difference = sortedRows[i].value - sortedRows[i - 1].value;
-
-		if (difference < 0) {
-			if (!isInDecline) {
-				isInDecline = true;
-				currentDeclinePeriod = [sortedRows[i - 1]];
-			}
-			currentDeclinePeriod.push(sortedRows[i]);
-		} else {
-			if (isInDecline) {
-				result.push(currentDeclinePeriod);
-				currentDeclinePeriod = [];
-			}
-
-			isInDecline = false;
-		}
-	}
-
-	if (isInDecline && currentDeclinePeriod.length > 0) result.push(currentDeclinePeriod);
-
-	return result;
-}
-
 export async function findAllPeriods(rows: StockRowDataModel[]): Promise<Periods> {
 	if (rows.length < 2) return { increase: [], decline: [], constant: [] };
 
@@ -144,6 +108,21 @@ export async function findBiggestDeclinePeriod(
 			tempDeclinePeriod[0].value - tempDeclinePeriod[tempDeclinePeriod.length - 1].value;
 
 		if (tempLargestDecline > currentLargestDecline) result = tempDeclinePeriod;
+	}
+
+	return result;
+}
+
+export async function findLongestConstantValuePeriod(
+	constantPeriods: StockRowDataModel[][]
+): Promise<StockRowDataModel[] | null> {
+	if (constantPeriods.length === 0) return null;
+	if (constantPeriods.length === 1) return constantPeriods[0];
+
+	let result: StockRowDataModel[] = constantPeriods[0];
+
+	for (let i = 1; i < constantPeriods.length; i++) {
+		if (constantPeriods[i].length > result.length) result = constantPeriods[i];
 	}
 
 	return result;
